@@ -51,9 +51,9 @@ MonoBehaviour:
     defines:
     - enabled: 1
       name: GAMEOBJECT_VIEWS_MODULE_SUPPORT
-    - enabled: 1
+    - enabled: 0
       name: PARTICLES_VIEWS_MODULE_SUPPORT
-    - enabled: 1
+    - enabled: 0
       name: DRAWMESH_VIEWS_MODULE_SUPPORT
     - enabled: 0
       name: WORLD_STATE_CHECK
@@ -135,7 +135,25 @@ MonoBehaviour:
       name: WORLD_MARKERS_MANAGED
   selectedConfiguration: Debug
   featuresListCategories:
-    items: []
+    items:
+    - folderCaption: 
+      features:
+        features:
+        - enabled: 1
+          feature: {fileID: 11400000, guid: 2e2f012c5ebcc5a4b9eb06f0f6466fee, type: 2}
+          innerFeatures:
+            features: []
+    - folderCaption: 
+      features:
+        features:
+        - enabled: 1
+          feature: {fileID: 11400000, guid: 7a695a333f0c66a4d8351efbcd74034e, type: 2}
+          innerFeatures:
+            features: []
+        - enabled: 1
+          feature: {fileID: 11400000, guid: 205b424bfa8cf25419cfaf6a6b7abc68, type: 2}
+          innerFeatures:
+            features: []
   worldSettings:
     useJobsForSystems: 1
     useJobsForViews: 1
@@ -149,7 +167,7 @@ MonoBehaviour:
       unityGameObjectProviderDisableJobs: 0
       unityParticlesProviderDisableJobs: 0
   worldDebugSettings:
-    createGameObjectsRepresentation: 0
+    createGameObjectsRepresentation: 1
     collectStatistic: 0
     statisticsObject: {fileID: 0}
     showViewsOnScene: 1

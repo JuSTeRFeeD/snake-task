@@ -5,8 +5,13 @@
         "ME.ECS",
         "ME.Pools",
         "ME.ECS.Serializer",
-        "ME.ECS.IL2CPP"
-        
+        "ME.ECS.IL2CPP",
+        "Unity.Mathematics",
+        "ME.ECS.Transform",
+        "ME.ECS.Markers",
+        "ME.ECS.Addons.DataConfigs",
+        "ME.ECS.Essentials.GlobalEvents",
+        "Unity.Collections"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -15,5 +20,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

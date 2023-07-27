@@ -39,6 +39,7 @@ namespace Project.Features.Snake.Systems
         private DataConfig snakeHeadConfig;
         
         private Entity lastPartOfSnake;
+        private int debugSnakeLen;
 
         void ISystemBase.OnConstruct()
         {
@@ -79,30 +80,9 @@ namespace Project.Features.Snake.Systems
             entity.Get<MoveDirection>().value = initMoveDir;
             
             entity.InstantiateView(snakeHeadViewId);
-            
-            // var entity = CreateEntityWithConfig(config);
-            //
-            // ref readonly var dir = ref entity.Get<MoveDirection>().value;
-            // ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
-            //
-            // var worldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos); 
-            // var prevWorldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos - new int2(0, 1));
-            // var targetWorldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos + new int2(0, 1));
-            //
-            // entity.SetPosition(worldPos);
-            // entity.Get<IsSnakeHead>();
-            // entity.Get<IsSnakePart>();
-            // entity.Get<PositionOnBoard>().value = boardCellPos;
-            // entity.Get<TargetPosition>().value = targetWorldPos;
-            // entity.Get<StartMovePosition>().value = worldPos;
-            // entity.Get<MoveDirection>().value = new float3(0, 0, 1);
-            // prevPositionInfo.direction = dir;
-            // prevPositionInfo.position = prevWorldPos;
-            //     
-            // entity.InstantiateView(snakeHeadViewId);
-            //
-            // boardFeature.UpdateBoardEntity(entity, BoardUtils.GetCellPos(worldPos));
 
+            debugSnakeLen++;
+            Debug.Log($"Snake len {debugSnakeLen}");
             return entity;
         }
 
@@ -126,35 +106,11 @@ namespace Project.Features.Snake.Systems
             entity.Get<StartMovePosition>().value = worldPos;
             entity.Get<PrevPositionInfo>().position = prevBoardCellPos;
             entity.Get<PrevPositionInfo>().direction = prevPartDirection;
-            entity.Get<TargetPosition>().value = targetWorldPos; 
-            
+            entity.Get<TargetPosition>().value = targetWorldPos;
+
+            debugSnakeLen++;
+            Debug.Log($"Snake len {debugSnakeLen}");
             entity.InstantiateView(snakePartViewId);
-            
-            // var entity = CreateEntityWithConfig(config);
-            //
-            // ref readonly var prevPartPositionInfo = ref previousPart.Get<PrevPositionInfo>();
-            // ref readonly var prevPartPositionOnBoard = ref previousPart.Get<PositionOnBoard>().value;
-            //
-            // var prevPartDirection = prevPartPositionInfo.direction;
-            // var moveDirection = new int2((int)prevPartDirection.x, (int)prevPartDirection.z);
-            //
-            // var worldPos = BoardUtils.GetWorldPosByCellPos(prevPartPositionOnBoard - moveDirection);
-            // var prevWorldPos = BoardUtils.GetWorldPosByCellPos(prevPartPositionOnBoard - moveDirection - moveDirection);
-            // var posOnBoard = BoardUtils.GetCellPos(worldPos);
-            //
-            // ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
-            //
-            // entity.SetPosition(worldPos);
-            // entity.Get<IsSnakePart>();
-            // entity.Get<StartMovePosition>().value = worldPos;
-            // entity.Get<SnakeLink>().prevPart = previousPart;
-            // entity.Get<PositionOnBoard>().value = posOnBoard;
-            // prevPositionInfo.position = prevWorldPos;
-            // prevPositionInfo.direction = prevPartDirection;
-            //
-            // entity.InstantiateView(snakePartViewId);
-            //
-            // boardFeature.UpdateBoardEntity(entity, posOnBoard);
 
             return entity;
         }

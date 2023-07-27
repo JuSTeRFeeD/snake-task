@@ -54,7 +54,7 @@ namespace Project.Features.Board
 
             InitializeBoardCells();
 
-            var group = world.AddEntities(100, Allocator.Temp, true);
+            var group = world.AddEntities(200, Allocator.Temp, true);
             group.Set(new SpawnApple());
         }
 
@@ -83,15 +83,18 @@ namespace Project.Features.Board
 
         public void UpdateBoardEntity(Entity entity, int2 cellPos)
         {
-            if (cellPos.x < 0 || cellPos.y < 0 || cellPos.x > boardSize.sizeX || cellPos.y > boardSize.sizeY) return;
+            if (!ValidateCellPos(cellPos)) return;
 
             ref var positionOnBoard = ref entity.Get<PositionOnBoard>();
-            var prevCell = cells[positionOnBoard.value];
-            if (prevCell.entity.Equals(entity))
+            if (ValidateCellPos(positionOnBoard.value))
             {
-                prevCell.entity = default;
+                var prevCell = cells[positionOnBoard.value];
+                if (prevCell.entity.Equals(entity))
+                {
+                    prevCell.entity = default;
+                }   
             }
-            
+
             var cell = cells[cellPos];
             if (!cell.entity.IsEmpty())
             {
@@ -100,6 +103,11 @@ namespace Project.Features.Board
             }
             cell.entity = entity;
             positionOnBoard.value = cellPos;
+        }
+        
+        private bool ValidateCellPos(int2 cellPos)
+        {
+            return cellPos.x >= 0 && cellPos.y >= 0 && cellPos.x <= boardSize.sizeX && cellPos.y <= boardSize.sizeY;
         }
 
         public float3 GetRandomEmptyBoardPosition()

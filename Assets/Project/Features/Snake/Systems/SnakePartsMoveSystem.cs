@@ -61,9 +61,8 @@ namespace Project.Features.Snake.Systems
 
             if (world.HasMarker<SnakePartsUpdateMarker>())
             {
-                entity.SetPosition(targetPosition.value); // here
+                entity.SetPosition(targetPosition.value);
                 entity.Get<PrevPositionInfo>().position = startMovePosition.value;
-                entity.Get<ChangePositionEvent>();
             }
             
             if (!snakeHead.Has<IsMove>())
@@ -84,8 +83,9 @@ namespace Project.Features.Snake.Systems
                 
                 var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
                 prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
-                Debug.Log($"Part new dir {((int)dir.x, (int)dir.z)}");
             }
+            
+            entity.Get<ChangePositionEvent>();
         }
     }
 }

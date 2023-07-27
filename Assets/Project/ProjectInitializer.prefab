@@ -167,10 +167,10 @@ MonoBehaviour:
       unityGameObjectProviderDisableJobs: 0
       unityParticlesProviderDisableJobs: 0
   worldDebugSettings:
-    createGameObjectsRepresentation: 1
+    createGameObjectsRepresentation: 0
     collectStatistic: 0
     statisticsObject: {fileID: 0}
-    showViewsOnScene: 1
+    showViewsOnScene: 0
     viewsSettings:
       unityGameObjectProviderShowOnScene: 0
       unityParticlesProviderShowOnScene: 0

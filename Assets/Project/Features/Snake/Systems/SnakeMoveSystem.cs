@@ -104,10 +104,11 @@ namespace Project.Features.Snake.Systems
                 startMovePosition.value = targetPosition.value;
 
                 entity.Remove<IsMove>();
-                entity.Get<ChangePositionEvent>();
-                
+
                 world.AddMarker(new SnakePartsUpdateMarker()); // TODO: delete
             }
+            
+            entity.Get<ChangePositionEvent>();
         }
     }
 }

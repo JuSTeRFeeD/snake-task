@@ -69,12 +69,13 @@ namespace Project.Features.Board.Systems
             {
                 if (!i.Value.entity.IsEmpty())
                 {
-                    Gizmos.color = Color.red;
+                    if (i.Value.entity.Has<Food>()) Gizmos.color = Color.green;
+                    else Gizmos.color = Color.yellow;
                     Gizmos.DrawCube(i.Value.worldPosition, size);
                 }
                 else
                 {
-                    Gizmos.color = Color.green;
+                    Gizmos.color = Color.gray;
                     Gizmos.DrawWireCube(i.Value.worldPosition, size);
                 }
             }

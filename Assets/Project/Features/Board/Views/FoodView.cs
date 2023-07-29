@@ -1,5 +1,5 @@
 ﻿using ME.ECS;
-using Project.Features.DestroyOverTime.Components;
+using Project.Features.Destroy.Components;
 using TMPro;
 using UnityEngine;
 
@@ -36,7 +36,7 @@ namespace Project.Features.Board.Views {
             if (entity.Has<TimeToDestroy>())
             {
                 var time = entity.Get<TimeToDestroy>().value;
-                timerText.SetText($"{time:F1}");
+                timerText.SetText($"{(int)time}");
             }
         }
         

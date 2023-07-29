@@ -16,7 +16,7 @@ MonoBehaviour:
   structComponents:
   - rid: 4573080573566255136
   - rid: 4573080573566255138
-  - rid: 4573080573566255139
+  - rid: 4573080628623310853
   removeStructComponents: []
   templates: []
   references:
@@ -30,8 +30,9 @@ MonoBehaviour:
     - rid: 4573080573566255138
       type: {class: Food, ns: Project.Features.Board.Components, asm: Project}
       data:
+        foodType: 0
         increaseSnakeSize: 2
-    - rid: 4573080573566255139
-      type: {class: ToDespawnTime, ns: Project.Features.Board.Components, asm: Project}
+    - rid: 4573080628623310853
+      type: {class: TimeToDestroy, ns: Project.Features.Destroy.Components, asm: Project}
       data:
-        value: 5
+        value: 10

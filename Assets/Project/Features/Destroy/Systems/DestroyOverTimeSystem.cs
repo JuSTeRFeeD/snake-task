@@ -1,5 +1,4 @@
 ﻿using ME.ECS;
-using Project.Features.DestroyOverTime.Components;
 
 namespace Project.Features.Destroy.Systems
 {

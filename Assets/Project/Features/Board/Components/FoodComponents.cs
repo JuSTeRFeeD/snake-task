@@ -18,9 +18,4 @@ namespace Project.Features.Board.Components
         public FoodType foodType;
         public int increaseSnakeSize;
     }
-
-    public struct ToDespawnTime : IComponent
-    {
-        public float value;
-    }
 }

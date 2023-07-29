@@ -1,6 +1,6 @@
 ﻿using ME.ECS;
 
-namespace Project.Features.DestroyOverTime.Components {
+namespace Project.Features.Destroy.Components {
 
     public struct TimeToDestroy : IComponent
     {

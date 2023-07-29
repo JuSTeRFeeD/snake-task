@@ -1,7 +1,6 @@
 ﻿using ME.ECS;
-using Project.Features.Board;
 using Project.Features.Board.Components;
-using Project.Features.DestroyOverTime.Components;
+using Project.Features.Destroy.Components;
 using Unity.Collections;
 using UnityEngine;
 

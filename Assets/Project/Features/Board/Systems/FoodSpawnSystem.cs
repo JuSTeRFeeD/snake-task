@@ -1,6 +1,5 @@
 ﻿using ME.ECS;
 using ME.ECS.DataConfigs;
-using Project.Features.DestroyOverTime.Components;
 using UnityEngine;
 
 namespace Project.Features.Board.Systems
@@ -60,12 +59,6 @@ namespace Project.Features.Board.Systems
             entity.Get<ChangePositionEvent>();
             entity.SetPosition(feature.GetRandomEmptyBoardPosition());
             entity.InstantiateView(viewId);
-
-            if (entity.Has<ToDespawnTime>())
-            {
-                entity.Get<TimeToDestroy>().value = entity.Get<ToDespawnTime>().value;
-                entity.Remove<TimeToDestroy>();
-            }
         }
 
         void ISystemBase.OnDeconstruct()

@@ -1,6 +1,7 @@
 ﻿using ME.ECS;
+using Project.Features.DestroyOverTime.Components;
 
-namespace Project.Features.Snake.Systems
+namespace Project.Features.Destroy.Systems
 {
 #pragma warning disable
     using Project.Components;
@@ -19,9 +20,9 @@ namespace Project.Features.Snake.Systems
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.DivideByZeroChecks, false)]
 #endif
-    public sealed class HandlePlayerInputSystem : ISystem, IAdvanceTick, IUpdate
+    public sealed class DespawnSystem : ISystemFilter
     {
-        private SnakeFeature feature;
+        private DestroyFeature feature;
 
         public World world { get; set; }
 
@@ -29,26 +30,27 @@ namespace Project.Features.Snake.Systems
         {
             this.GetFeature(out feature);
         }
-        
+
         void ISystemBase.OnDeconstruct()
         {
         }
 
-        void IAdvanceTick.AdvanceTick(in float deltaTime)
+#if !CSHARP_8_OR_NEWER
+        bool ISystemFilter.jobs => false;
+        int ISystemFilter.jobsBatchCount => 64;
+#endif
+        Filter ISystemFilter.filter { get; set; }
+
+        Filter ISystemFilter.CreateFilter()
         {
+            return Filter.Create("Filter-DespawnSystem")
+                .With<ToDespawn>()
+                .Push();
         }
 
-        void IUpdate.Update(in float deltaTime)
+        void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
-            if (!world.GetMarker(out PlayerMoveInputMarker input)) return;
-
-            var snakeHead = feature.GetSnakeHead();
-            if (snakeHead.IsEmpty()) return;
-
-            ref var prevDir = ref snakeHead.Get<PrevPositionInfo>().direction;
-            if (prevDir.x == -input.value.x) return;
-            if (prevDir.y == -input.value.y) return;
-            snakeHead.Get<MoveDirection>().value = input.value;
+            world.RemoveEntity(entity);
         }
     }
 }

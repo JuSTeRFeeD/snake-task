@@ -24,7 +24,7 @@ namespace Project.Features.Input.Modules
 
         void IModuleBase.OnConstruct()
         {
-            this.feature = this.world.GetFeature<InputFeature>();
+            feature = world.GetFeature<InputFeature>();
         }
 
         void IModuleBase.OnDeconstruct()
@@ -41,6 +41,8 @@ namespace Project.Features.Input.Modules
             else if (y > 0) y = 1;
             else if (y < 0) y = -1;
 
+            if (x != 0 && y != 0) y = 0;
+            
             var input = new int2((int)x, (int)y);
             
             if (input.Equals(int2.zero)) return;

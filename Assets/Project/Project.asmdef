@@ -11,7 +11,8 @@
         "ME.ECS.Markers",
         "ME.ECS.Addons.DataConfigs",
         "ME.ECS.Essentials.GlobalEvents",
-        "Unity.Collections"
+        "Unity.Collections",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

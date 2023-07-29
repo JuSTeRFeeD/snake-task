@@ -1,15 +1,24 @@
 ﻿using ME.ECS;
+using Project.Features.DestroyOverTime.Components;
+using TMPro;
+using UnityEngine;
 
 namespace Project.Features.Board.Views {
     
     using ME.ECS.Views.Providers;
     
-    public class FoodView : MonoBehaviourView {
+    public class FoodView : MonoBehaviourView
+    {
+        [SerializeField] private Canvas timerCanvas;
+        [SerializeField] private TextMeshProUGUI timerText;
         
         public override bool applyStateJob => true;
 
         public override void OnInitialize() {
-            
+            if (timerCanvas)
+            {
+                timerCanvas.gameObject.SetActive(entity.Has<TimeToDestroy>());
+            }
         }
         
         public override void OnDeInitialize() {
@@ -23,8 +32,13 @@ namespace Project.Features.Board.Views {
         public override void ApplyState(float deltaTime, bool immediately)
         {
             transform.position = entity.GetPosition();
+            
+            if (entity.Has<TimeToDestroy>())
+            {
+                var time = entity.Get<TimeToDestroy>().value;
+                timerText.SetText($"{time:F1}");
+            }
         }
         
     }
-    
 }

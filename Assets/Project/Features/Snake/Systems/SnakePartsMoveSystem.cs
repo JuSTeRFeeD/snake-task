@@ -1,5 +1,7 @@
-﻿using ME.ECS;
+﻿using System;
+using ME.ECS;
 using Project.Features.Board.Components;
+using Project.Utilities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -30,7 +32,7 @@ namespace Project.Features.Snake.Systems
 
         void ISystemBase.OnConstruct()
         {
-            this.GetFeature(out this.feature);
+            this.GetFeature(out feature);
         }
 
         void ISystemBase.OnDeconstruct()
@@ -55,14 +57,18 @@ namespace Project.Features.Snake.Systems
         {
             ref readonly var nextSnakePart = ref entity.Get<SnakeLink>().prevPart;
             ref readonly var targetPosition = ref nextSnakePart.Get<StartMovePosition>();
+            
+            ref readonly var positionOnBoard = ref entity.Get<PositionOnBoard>().value;
             ref var startMovePosition = ref entity.Get<StartMovePosition>();
+            ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
 
             var snakeHead = feature.GetSnakeHead();
 
-            if (world.HasMarker<SnakePartsUpdateMarker>())
+            if (snakeHead.Has<SnakePartsUpdateEvent>())
             {
                 entity.SetPosition(targetPosition.value);
                 entity.Get<PrevPositionInfo>().position = startMovePosition.value;
+                entity.Get<ChangePositionEvent>();
             }
             
             if (!snakeHead.Has<IsMove>())
@@ -71,21 +77,55 @@ namespace Project.Features.Snake.Systems
                 startMovePosition.value = entity.GetPosition();
                 return;
             }
+            
+            var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
+            prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
 
-            ref readonly var moveTime = ref snakeHead.Get<MoveTime>();
-            ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
-
-            if (moveTime.value < SnakeMoveSystem.MoveSeconds)
+            // Check to teleport
             {
-                var t = moveTime.value / SnakeMoveSystem.MoveSeconds;
-                var newPos = Vector3.Lerp(startMovePosition.value, targetPosition.value, t);
-                entity.SetPosition(newPos);
-                
-                var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
-                prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
+                var targetCellPos = BoardUtils.GetCellPos(targetPosition.value);
+                var diff = new int2(Math.Abs(targetCellPos.x - positionOnBoard.x),
+                    Math.Abs(targetCellPos.y - positionOnBoard.y));
+                if (diff.x > 1 || diff.y > 1)
+                {
+                    entity.SetPosition(targetPosition.value);
+                    return;
+                }
             }
             
-            entity.Get<ChangePositionEvent>();
+            ref readonly var moveTime = ref snakeHead.Read<MoveTime>().value;
+            var t = moveTime / SnakeMoveSystem.MoveSeconds;
+            var newPos = Vector3.Lerp(startMovePosition.value, targetPosition.value, t);
+            entity.SetPosition(newPos);
+
+            // Check to teleport
+            // var checkStart = (Vector3)startMovePosition.value;
+            // var checkEnd = (Vector3)targetPosition.value;
+            // if ((checkStart - checkEnd).sqrMagnitude > BoardUtils.GridCellSize * 3)
+            // {
+            //     entity.Get<PrevPositionInfo>().position = startMovePosition.value;
+            //     
+            //     var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
+            //     prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
+            //     
+            //     entity.SetPosition(nextSnakePart.Get<PrevPositionInfo>().position);
+            //     entity.Get<ChangePositionEvent>();
+            //     return;
+            // }
+
+            // ref readonly var moveTime = ref snakeHead.Get<MoveTime>();
+            //
+            // if (moveTime.value < SnakeMoveSystem.MoveSeconds)
+            // {
+            //     var t = moveTime.value / SnakeMoveSystem.MoveSeconds;
+            //     var newPos = Vector3.Lerp(startMovePosition.value, targetPosition.value, t);
+            //     entity.SetPosition(newPos);
+            //     
+            //     var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
+            //     prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
+            // }
+            //
+            // entity.Get<ChangePositionEvent>();
         }
     }
 }

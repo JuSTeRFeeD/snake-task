@@ -43,7 +43,7 @@ namespace Project.Features.Board
 #endif
     public sealed class BoardFeature : Feature
     {
-        private BoardSize boardSize;
+        public BoardSize BoardSize { get; private set; }
 
         public readonly Dictionary<int2, BoardCell> cells = new ();
 
@@ -54,18 +54,18 @@ namespace Project.Features.Board
 
             InitializeBoardCells();
 
-            var group = world.AddEntities(200, Allocator.Temp, true);
-            group.Set(new SpawnApple());
+            var group = world.AddEntities(20, Allocator.Temp, true);
+            group.Set(new SpawnFood());
         }
 
         private void InitializeBoardCells()
         {
             var boardConfig = Resources.Load<DataConfig>("BoardConfig");
-            boardSize = boardConfig.Get<BoardSize>();
+            BoardSize = boardConfig.Get<BoardSize>();
 
-            for (var x = 0; x < boardSize.sizeX; x++)
+            for (var x = 0; x < BoardSize.sizeX; x++)
             {
-                for (var y = 0; y < boardSize.sizeY; y++)
+                for (var y = 0; y < BoardSize.sizeY; y++)
                 {
                     var cellPos = new int2(x, y);
                     var worldPos = BoardUtils.GetWorldPosByCellPos(cellPos);
@@ -83,10 +83,10 @@ namespace Project.Features.Board
 
         public void UpdateBoardEntity(Entity entity, int2 cellPos)
         {
-            if (!ValidateCellPos(cellPos)) return;
+            if (!CheckPosOnBoard(cellPos)) return;
 
             ref var positionOnBoard = ref entity.Get<PositionOnBoard>();
-            if (ValidateCellPos(positionOnBoard.value))
+            if (CheckPosOnBoard(positionOnBoard.value))
             {
                 var prevCell = cells[positionOnBoard.value];
                 if (prevCell.entity.Equals(entity))
@@ -105,9 +105,9 @@ namespace Project.Features.Board
             positionOnBoard.value = cellPos;
         }
         
-        private bool ValidateCellPos(int2 cellPos)
+        public bool CheckPosOnBoard(int2 cellPos)
         {
-            return cellPos.x >= 0 && cellPos.y >= 0 && cellPos.x <= boardSize.sizeX && cellPos.y <= boardSize.sizeY;
+            return cellPos.x >= 0 && cellPos.y >= 0 && cellPos.x < BoardSize.sizeX && cellPos.y < BoardSize.sizeY;
         }
 
         public float3 GetRandomEmptyBoardPosition()

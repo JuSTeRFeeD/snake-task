@@ -1,4 +1,5 @@
 ﻿using ME.ECS;
+using Project.Features.Board;
 using Project.Features.Board.Components;
 using Project.Utilities;
 using Unity.Mathematics;
@@ -25,6 +26,7 @@ namespace Project.Features.Snake.Systems
 #endif
     public sealed class SnakeMoveSystem : ISystemFilter
     {
+        private BoardFeature boardFeature;
         private SnakeFeature feature;
 
         private const float PrepareToMoveSeconds = .15f;
@@ -35,6 +37,7 @@ namespace Project.Features.Snake.Systems
         void ISystemBase.OnConstruct()
         {
             this.GetFeature(out feature);
+            this.GetFeature(out boardFeature);
         }
 
         void ISystemBase.OnDeconstruct()
@@ -63,6 +66,7 @@ namespace Project.Features.Snake.Systems
 
             if (prepareToMoveTime.value > 0)
             {
+                entity.Remove<SnakePartsUpdateEvent>();
                 prepareToMoveTime.value -= deltaTime;
                 return;
             }
@@ -70,44 +74,67 @@ namespace Project.Features.Snake.Systems
             ref var moveTime = ref entity.Get<MoveTime>();
             ref var targetPosition = ref entity.Get<TargetPosition>();
             ref var startMovePosition = ref entity.Get<StartMovePosition>();
+            ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
 
             if (!entity.Has<IsMove>())
             {
                 ref readonly var positionOnBoard = ref entity.Get<PositionOnBoard>().value;
                 ref readonly var moveDirection = ref entity.Get<MoveDirection>().value;
-                
-                targetPosition.value = BoardUtils.GetWorldPosByCellPos(positionOnBoard + moveDirection);
+
+                var targetCellPos = positionOnBoard + moveDirection;
+                targetPosition.value = BoardUtils.GetWorldPosByCellPos(targetCellPos);
+
+                // Check to teleport
+                if (!boardFeature.CheckPosOnBoard(targetCellPos))
+                {
+                    if (targetCellPos.x >= boardFeature.BoardSize.sizeX) targetCellPos.x = 0;
+                    else if (targetCellPos.x < 0) targetCellPos.x = boardFeature.BoardSize.sizeX - 1;
+                    else if (targetCellPos.y >= boardFeature.BoardSize.sizeY) targetCellPos.y = 0;
+                    else if (targetCellPos.y < 0) targetCellPos.y = boardFeature.BoardSize.sizeY - 1;
+                    targetPosition.value = BoardUtils.GetWorldPosByCellPos(targetCellPos);
+
+                    EndMove(entity, ref startMovePosition, ref targetPosition,
+                        ref prepareToMoveTime, ref moveTime, ref prevPositionInfo);
+
+                    return;
+                }
             }
 
             moveTime.value += deltaTime;
             
-            ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
-
             if (moveTime.value < MoveSeconds)
             {
+                entity.Get<IsMove>();
+            
                 var t = moveTime.value / MoveSeconds;
                 var newPos = Vector3.Lerp(startMovePosition.value, targetPosition.value, t);
                 entity.SetPosition(newPos);
-                entity.Get<IsMove>();
-             
+
                 var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
                 prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
+                entity.Get<ChangePositionEvent>();
             }
             else
             {
-                prepareToMoveTime.value = PrepareToMoveSeconds;
-                moveTime.value = 0;
-                
-                prevPositionInfo.position = startMovePosition.value;
-
-                entity.SetPosition(targetPosition.value);
-                startMovePosition.value = targetPosition.value;
-
-                entity.Remove<IsMove>();
-
-                world.AddMarker(new SnakePartsUpdateMarker()); // TODO: delete
+                EndMove(entity, ref startMovePosition, ref targetPosition, ref prepareToMoveTime, ref moveTime,
+                    ref prevPositionInfo);
             }
-            
+        }
+
+        private static void EndMove(in Entity entity, ref StartMovePosition startMovePosition, ref TargetPosition targetPosition,
+            ref PrepareToMoveTime prepareToMoveTime, ref MoveTime moveTime, ref PrevPositionInfo prevPositionInfo)
+        {
+            prepareToMoveTime.value = PrepareToMoveSeconds;
+            moveTime.value = 0;
+
+            prevPositionInfo.position = startMovePosition.value;
+
+            entity.SetPosition(targetPosition.value);
+            startMovePosition.value = targetPosition.value;
+
+            entity.Remove<IsMove>();
+            entity.Get<SnakePartsUpdateEvent>();
+            entity.Get<ChangePositionEvent>();
             entity.Get<ChangePositionEvent>();
         }
     }

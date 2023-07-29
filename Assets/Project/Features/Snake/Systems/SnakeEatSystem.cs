@@ -1,6 +1,7 @@
 ﻿using ME.ECS;
 using Project.Features.Board;
 using Project.Features.Board.Components;
+using Project.Features.DestroyOverTime.Components;
 using Unity.Collections;
 using UnityEngine;
 
@@ -26,7 +27,6 @@ namespace Project.Features.Snake.Systems
     public sealed class SnakeEatSystem : ISystemFilter
     {
         private SnakeFeature feature;
-        private BoardFeature boardFeature;
 
         private Filter foodFilter;
 
@@ -35,7 +35,6 @@ namespace Project.Features.Snake.Systems
         void ISystemBase.OnConstruct()
         {
             this.GetFeature(out feature);
-            this.GetFeature(out boardFeature);
 
             Filter.Create("Filter-SnakeEatSystem")
                 .With<Food>()
@@ -68,7 +67,7 @@ namespace Project.Features.Snake.Systems
             
             if (collisionWith.Has<IsSnakePart>())
             {
-                world.RemoveEntity(entity);
+                entity.Get<ToDespawn>();
                 Debug.Log("END GAME");
                 return;
             }
@@ -76,17 +75,32 @@ namespace Project.Features.Snake.Systems
             if (collisionWith.Has<Food>())
             {
                 ref var food = ref collisionWith.Get<Food>();
+
+                if (food.foodType == FoodType.Apple)
+                {
+                    ref var eatenApples = ref entity.Get<EatenApples>();
+                    eatenApples.value++;
+                    if (eatenApples.value % 5 == 0)
+                    {
+                        SpawnFood(FoodType.Banana);                        
+                    }
+                }
                 
                 var group = world.AddEntities(food.increaseSnakeSize, Allocator.Temp, true);
                 group.Set(new SpawnSnakePart());
 
-                world.RemoveEntity(collisionWith);
+                collisionWith.Get<ToDespawn>();
                 
-                var e = world.AddEntity();
-                e.Get<SpawnApple>();
+                SpawnFood(FoodType.Apple);
             }
 
             entity.Remove<CollisionWithEntity>();
+        }
+
+        private void SpawnFood(FoodType foodType)
+        {
+            var apple = world.AddEntity();
+            apple.Get<SpawnFood>().foodType = foodType;
         }
     }
 }

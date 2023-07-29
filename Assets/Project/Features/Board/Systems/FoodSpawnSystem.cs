@@ -1,5 +1,6 @@
 ﻿using ME.ECS;
 using ME.ECS.DataConfigs;
+using Project.Features.DestroyOverTime.Components;
 using UnityEngine;
 
 namespace Project.Features.Board.Systems
@@ -35,7 +36,7 @@ namespace Project.Features.Board.Systems
 
         void ISystemBase.OnConstruct()
         {
-            this.GetFeature(out this.feature);
+            this.GetFeature(out feature);
 
             appleConfig = Resources.Load<DataConfig>("Food/AppleConfig");
             bananaConfig = Resources.Load<DataConfig>("Food/BananaConfig");
@@ -50,16 +51,21 @@ namespace Project.Features.Board.Systems
             var bananaView = bananaConfig.Get<DataConfigViewReference>().prefabView;
             bananaViewId = world.RegisterViewSource(bananaView);
         }
-
-        private void SpawnApple()
+        
+        private void SpawnFood(ConfigBase config, ViewId viewId)
         {
-            var entity = world.AddEntity("Apple");
-            appleConfig.Apply(entity);
+            var entity = world.AddEntity();
+            config.Apply(entity);
             entity.Get<PositionOnBoard>();
             entity.Get<ChangePositionEvent>();
-            entity.InstantiateView(appleViewId);
-
             entity.SetPosition(feature.GetRandomEmptyBoardPosition());
+            entity.InstantiateView(viewId);
+
+            if (entity.Has<ToDespawnTime>())
+            {
+                entity.Get<TimeToDestroy>().value = entity.Get<ToDespawnTime>().value;
+                entity.Remove<TimeToDestroy>();
+            }
         }
 
         void ISystemBase.OnDeconstruct()
@@ -67,21 +73,31 @@ namespace Project.Features.Board.Systems
         }
         
 #if !CSHARP_8_OR_NEWER
+
         bool ISystemFilter.jobs => false;
+
         int ISystemFilter.jobsBatchCount => 64;
 #endif
+
         Filter ISystemFilter.filter { get; set; }
 
         Filter ISystemFilter.CreateFilter()
         {
             return Filter.Create("Filter-Food-Spawn-System")
-                .With<SpawnApple>()
+                .With<SpawnFood>()
                 .Push();
         }
 
         void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
-            SpawnApple();
+            if (entity.Read<SpawnFood>().foodType == FoodType.Apple)
+            {
+                SpawnFood(appleConfig, appleViewId);
+            }
+            else
+            {
+                SpawnFood(bananaConfig, bananaViewId);
+            }
             world.RemoveEntity(entity);
         }
     }

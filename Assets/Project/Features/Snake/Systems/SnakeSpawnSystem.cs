@@ -1,6 +1,5 @@
 ﻿using ME.ECS;
 using ME.ECS.DataConfigs;
-using Project.Features.Board;
 using Project.Features.Board.Components;
 using Project.Utilities;
 using Unity.Mathematics;
@@ -28,7 +27,6 @@ namespace Project.Features.Snake.Systems
     public sealed class SnakeSpawnSystem : ISystemFilter
     {
         private SnakeFeature feature;
-        private BoardFeature boardFeature;
 
         public World world { get; set; }
 
@@ -44,7 +42,6 @@ namespace Project.Features.Snake.Systems
         void ISystemBase.OnConstruct()
         {
             this.GetFeature(out feature);
-            this.GetFeature(out boardFeature);
 
             snakeHeadConfig = Resources.Load<DataConfig>("SnakeHeadConfig");
             snakePartConfig = Resources.Load<DataConfig>("SnakePartConfig");
@@ -88,12 +85,10 @@ namespace Project.Features.Snake.Systems
 
         private Entity CreateSnakePart(ConfigBase config, Entity previousPart)
         {
-            var prevPartDirection = previousPart.Get<PrevPositionInfo>().direction;
-            
             var entity = CreateEntityWithConfig(config);
 
+            var prevPartDirection = previousPart.Get<PrevPositionInfo>().direction;
             var boardCellPos = previousPart.Get<PositionOnBoard>().value - prevPartDirection;
-            var prevBoardCellPos = BoardUtils.GetWorldPosByCellPos(boardCellPos - prevPartDirection);
             
             var worldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos);
             var targetWorldPos = BoardUtils.GetWorldPosByCellPos(previousPart.Get<PositionOnBoard>().value);
@@ -104,7 +99,7 @@ namespace Project.Features.Snake.Systems
             entity.Get<SnakeLink>().prevPart = previousPart;
             entity.Get<PositionOnBoard>().value = boardCellPos;
             entity.Get<StartMovePosition>().value = worldPos;
-            entity.Get<PrevPositionInfo>().position = prevBoardCellPos;
+            entity.Get<PrevPositionInfo>().position = worldPos;
             entity.Get<PrevPositionInfo>().direction = prevPartDirection;
             entity.Get<TargetPosition>().value = targetWorldPos;
 
@@ -139,13 +134,8 @@ namespace Project.Features.Snake.Systems
                 .Push();
         }
 
-        // private float test = 5; // TODO: delete
-
         void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
-            // test -= deltaTime; // TODO: delete
-            // if (test > 0) return; // TODO: delete
-            
             lastPartOfSnake = lastPartOfSnake.IsEmpty()
                 ? CreateSnakeHead(snakeHeadConfig, entity.Get<SnakeStartPosition>().startPosition) 
                 : CreateSnakePart(snakePartConfig, lastPartOfSnake);

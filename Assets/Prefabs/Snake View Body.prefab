@@ -146,7 +146,7 @@ MonoBehaviour:
     cacheTimeout: 0
   interpolationParameters:
     enabled: 0
-    movementSpeed: 0
+    movementSpeed: 100
     rotationSpeed: 0
   parentParameters:
     enabled: 0

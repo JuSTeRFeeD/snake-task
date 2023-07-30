@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: SnakeFeature
   m_EditorClassIdentifier: 
   editorComment: 
+  foodEaten: {fileID: 11400000, guid: 4dd63a332163eea4292adca6538b36eb, type: 2}

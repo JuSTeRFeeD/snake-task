@@ -8,9 +8,9 @@ namespace Project.Features.Board.Components
         Banana
     }
     
-    public struct SpawnFood : IComponent
+    public struct SpawnFoodEvent : IComponent
     {
-        public FoodType foodType;
+        public bool isInitSpawn;
     }
     
     public struct Food : IComponent

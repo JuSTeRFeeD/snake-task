@@ -3,6 +3,8 @@ using System.Linq;
 using ME.ECS;
 using ME.ECS.DataConfigs;
 using Project.Components;
+using Project.Features.Board.Components;
+using Project.Features.Board.Systems;
 using Project.Utilities;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -10,32 +12,6 @@ using UnityEngine;
 
 namespace Project.Features.Board
 {
-    using Components;
-    using Modules;
-    using Systems;
-    using Features;
-    using Markers;
-    using Board.Components;
-    using Board.Modules;
-    using Board.Systems;
-    using Board.Markers;
-
-    namespace Board.Components
-    {
-    }
-
-    namespace Board.Modules
-    {
-    }
-
-    namespace Board.Systems
-    {
-    }
-
-    namespace Board.Markers
-    {
-    }
-
 #if ECS_COMPILE_IL2CPP_OPTIONS
     [Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.NullChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
@@ -46,16 +22,21 @@ namespace Project.Features.Board
         public BoardSize BoardSize { get; private set; }
 
         public readonly Dictionary<int2, BoardCell> cells = new ();
-
+        
         protected override void OnConstruct()
         {
             AddSystem<BoardCellSystem>();
             AddSystem<FoodSpawnSystem>();
 
             InitializeBoardCells();
+            
+            SpawnFood();
+        }
 
+        private void SpawnFood()
+        {
             var group = world.AddEntities(20, Allocator.Temp, true);
-            group.Set(new SpawnFood());
+            group.Set(new SpawnFoodEvent() { isInitSpawn = true });
         }
 
         private void InitializeBoardCells()
@@ -110,16 +91,18 @@ namespace Project.Features.Board
             return cellPos.x >= 0 && cellPos.y >= 0 && cellPos.x < BoardSize.sizeX && cellPos.y < BoardSize.sizeY;
         }
 
-        public float3 GetRandomEmptyBoardPosition()
+        public bool GetRandomEmptyBoardPosition(out float3 emptyPosition)
         {
+            var emptyExists = false;
             var emptyCount = 0;
-            float3 emptyPosition = default;
+            emptyPosition = default;
 
             foreach (var cell in cells
                          .Select(kvp => kvp.Value)
                          .Where(cell => cell.entity.IsEmpty())
                      )
             {
+                emptyExists = true;
                 emptyCount++;
                 if (world.GetRandomRange(0, emptyCount) == 0)
                 {
@@ -127,7 +110,7 @@ namespace Project.Features.Board
                 }
             }
 
-            return emptyPosition;
+            return emptyExists;
         }
     }
 }

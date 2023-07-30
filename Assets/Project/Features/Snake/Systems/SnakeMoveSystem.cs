@@ -1,24 +1,14 @@
 ﻿using ME.ECS;
+using Project.Components;
 using Project.Features.Board;
 using Project.Features.Board.Components;
+using Project.Features.Snake.Components;
 using Project.Utilities;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Project.Features.Snake.Systems
 {
-#pragma warning disable
-    using Project.Components;
-    using Project.Modules;
-    using Project.Systems;
-    using Project.Markers;
-    using Components;
-    using Modules;
-    using Systems;
-    using Markers;
-
-#pragma warning restore
-
 #if ECS_COMPILE_IL2CPP_OPTIONS
     [Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.NullChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
@@ -57,6 +47,7 @@ namespace Project.Features.Snake.Systems
                 .With<MoveDirection>()
                 .With<TargetPosition>()
                 .With<StartMovePosition>()
+                .WithoutShared<GamePaused>()
                 .Push();
         }
 
@@ -78,8 +69,8 @@ namespace Project.Features.Snake.Systems
 
             if (!entity.Has<IsMove>())
             {
-                ref readonly var positionOnBoard = ref entity.Get<PositionOnBoard>().value;
-                ref readonly var moveDirection = ref entity.Get<MoveDirection>().value;
+                ref readonly var positionOnBoard = ref entity.Read<PositionOnBoard>().value;
+                ref readonly var moveDirection = ref entity.Read<MoveDirection>().value;
 
                 var targetCellPos = positionOnBoard + moveDirection;
                 targetPosition.value = BoardUtils.GetWorldPosByCellPos(targetCellPos);

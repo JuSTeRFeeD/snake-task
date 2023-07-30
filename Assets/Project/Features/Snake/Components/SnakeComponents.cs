@@ -51,11 +51,6 @@ namespace Project.Features.Snake.Components
         public float value;
     }
 
-    public struct EatenApples : IComponent
-    {
-        public int value;
-    }
-
     public struct SnakePartsUpdateEvent : IComponent
     {
     }

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.endel.nativewebsocket": "https://github.com/endel/NativeWebSocket.git#upm",
     "com.me.ecs": "https://github.com/chromealex/ecs-submodule.git",
     "com.me.ecs.essentials.dataconfigs": "https://github.com/chromealex/me.ecs-dataconfigs.git",
     "com.me.ecs.essentials.globalevents": "https://github.com/chromealex/me.ecs-globalevents.git",

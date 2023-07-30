@@ -1,23 +1,15 @@
 ﻿using ME.ECS;
+using Project.Components;
 using Project.Features.Board.Components;
 using Project.Features.Destroy.Components;
+using Project.Features.GameState;
+using Project.Features.Snake.Components;
+using Project.Markers;
 using Unity.Collections;
 using UnityEngine;
 
 namespace Project.Features.Snake.Systems
 {
-#pragma warning disable
-    using Project.Components;
-    using Project.Modules;
-    using Project.Systems;
-    using Project.Markers;
-    using Components;
-    using Modules;
-    using Systems;
-    using Markers;
-
-#pragma warning restore
-
 #if ECS_COMPILE_IL2CPP_OPTIONS
     [Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.NullChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
@@ -25,15 +17,19 @@ namespace Project.Features.Snake.Systems
 #endif
     public sealed class SnakeEatSystem : ISystemFilter
     {
+        private GameStateFeature gameStateFeature;
         private SnakeFeature feature;
 
         private Filter foodFilter;
+
+        private RPCId collectAppleRpcId;
 
         public World world { get; set; }
 
         void ISystemBase.OnConstruct()
         {
             this.GetFeature(out feature);
+            this.GetFeature(out gameStateFeature);
 
             Filter.Create("Filter-SnakeEatSystem")
                 .With<Food>()
@@ -57,6 +53,8 @@ namespace Project.Features.Snake.Systems
                 .With<IsSnakeHead>()
                 .With<PositionOnBoard>()
                 .With<CollisionWithEntity>()
+                .WithShared<GameInfo>()
+                .WithoutShared<GamePaused>()
                 .Push();
         }
 
@@ -66,40 +64,36 @@ namespace Project.Features.Snake.Systems
             
             if (collisionWith.Has<IsSnakePart>())
             {
-                entity.Get<ToDespawn>();
-                Debug.Log("END GAME");
+                gameStateFeature.EndGame();
                 return;
             }
 
             if (collisionWith.Has<Food>())
             {
+                feature.foodEaten.Execute();
+                
+                ref var gameInfo = ref world.GetSharedData<GameInfo>();
                 ref var food = ref collisionWith.Get<Food>();
+                collisionWith.Get<ToDespawn>();
 
                 if (food.foodType == FoodType.Apple)
                 {
-                    ref var eatenApples = ref entity.Get<EatenApples>();
-                    eatenApples.value++;
-                    if (eatenApples.value % 5 == 0)
-                    {
-                        SpawnFood(FoodType.Banana);                        
-                    }
+                    gameInfo.appleCount++;
                 }
                 
                 var group = world.AddEntities(food.increaseSnakeSize, Allocator.Temp, true);
-                group.Set(new SpawnSnakePart());
+                group.Set(new SpawnSnakePartEvent());
 
-                collisionWith.Get<ToDespawn>();
-                
-                SpawnFood(FoodType.Apple);
+                SpawnFood();
             }
 
             entity.Remove<CollisionWithEntity>();
         }
 
-        private void SpawnFood(FoodType foodType)
+        private void SpawnFood()
         {
             var apple = world.AddEntity();
-            apple.Get<SpawnFood>().foodType = foodType;
+            apple.Set<SpawnFoodEvent>();
         }
     }
 }

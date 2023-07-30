@@ -13,8 +13,7 @@ namespace Project.Features.Snake.Components
         public int2 startPosition;
     }
 
-    public struct SpawnSnakePart : IComponent
+    public struct SpawnSnakePartEvent : IComponent
     {
-        private int count;
     }
 }

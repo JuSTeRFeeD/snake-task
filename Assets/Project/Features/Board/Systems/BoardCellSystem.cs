@@ -1,21 +1,11 @@
 ﻿using ME.ECS;
+using Project.Features.Board.Components;
+using Project.Features.Destroy.Components;
 using Project.Utilities;
 using UnityEngine;
 
 namespace Project.Features.Board.Systems
 {
-#pragma warning disable
-    using Project.Components;
-    using Project.Modules;
-    using Project.Systems;
-    using Project.Markers;
-    using Components;
-    using Modules;
-    using Systems;
-    using Markers;
-
-#pragma warning restore
-
 #if ECS_COMPILE_IL2CPP_OPTIONS
     [Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.NullChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
@@ -24,10 +14,6 @@ namespace Project.Features.Board.Systems
     public sealed class BoardCellSystem : ISystemFilter, IDrawGizmos
     {
         private BoardFeature feature;
-
-#if UNITY_EDITOR
-        private Filter cellsFilter;
-#endif
 
         public World world { get; set; }
 

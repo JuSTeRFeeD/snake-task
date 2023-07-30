@@ -1,36 +1,12 @@
 ﻿using ME.ECS;
 using ME.ECS.DataConfigs;
+using Project.Features.Snake.Components;
+using Project.Features.Snake.Systems;
 using Unity.Collections;
 using UnityEngine;
 
 namespace Project.Features.Snake
 {
-    using Components;
-    using Modules;
-    using Systems;
-    using Features;
-    using Markers;
-    using Snake.Components;
-    using Snake.Modules;
-    using Snake.Systems;
-    using Snake.Markers;
-
-    namespace Snake.Components
-    {
-    }
-
-    namespace Snake.Modules
-    {
-    }
-
-    namespace Snake.Systems
-    {
-    }
-
-    namespace Snake.Markers
-    {
-    }
-
 #if ECS_COMPILE_IL2CPP_OPTIONS
     [Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.NullChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
@@ -39,7 +15,9 @@ namespace Project.Features.Snake
     public sealed class SnakeFeature : Feature
     {
         private Filter snakeHeadFilter;
-
+        
+        public GlobalEvent foodEaten;
+        
         protected override void OnConstruct()
         {
             AddSystem<SnakeEatSystem>();
@@ -63,7 +41,7 @@ namespace Project.Features.Snake
             var startPos = initSnakeConfig.Get<SnakeStartPosition>().startPosition;
             
             var group = world.AddEntities(tailLen, Allocator.Temp, copyMode: true);
-            group.Set(new SpawnSnakePart());
+            group.Set(new SpawnSnakePartEvent());
             group.Set(new SnakeStartPosition()
             {
                 startPosition = startPos 
@@ -73,7 +51,7 @@ namespace Project.Features.Snake
         protected override void OnDeconstruct()
         {
         }
-
+        
         public Entity GetSnakeHead()
         {
             foreach (var e in snakeHeadFilter)

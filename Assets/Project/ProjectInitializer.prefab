@@ -140,6 +140,14 @@ MonoBehaviour:
       features:
         features:
         - enabled: 1
+          feature: {fileID: 11400000, guid: 726c669e3c5356c408b7f77834ae90a1, type: 2}
+          innerFeatures:
+            features: []
+        - enabled: 1
+          feature: {fileID: 11400000, guid: 43bed96b0b88909448b8d417a3d17a41, type: 2}
+          innerFeatures:
+            features: []
+        - enabled: 1
           feature: {fileID: 11400000, guid: 2e2f012c5ebcc5a4b9eb06f0f6466fee, type: 2}
           innerFeatures:
             features: []
@@ -154,9 +162,6 @@ MonoBehaviour:
           feature: {fileID: 11400000, guid: 205b424bfa8cf25419cfaf6a6b7abc68, type: 2}
           innerFeatures:
             features: []
-    - folderCaption: 
-      features:
-        features:
         - enabled: 1
           feature: {fileID: 11400000, guid: 393cd56a516c2d345931153ddfe13d30, type: 2}
           innerFeatures:

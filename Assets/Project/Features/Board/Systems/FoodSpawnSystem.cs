@@ -1,21 +1,12 @@
 ﻿using ME.ECS;
 using ME.ECS.DataConfigs;
+using Project.Components;
+using Project.Features.Board.Components;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Project.Features.Board.Systems
 {
-#pragma warning disable
-    using Project.Components;
-    using Project.Modules;
-    using Project.Systems;
-    using Project.Markers;
-    using Components;
-    using Modules;
-    using Systems;
-    using Markers;
-
-#pragma warning restore
-
 #if ECS_COMPILE_IL2CPP_OPTIONS
     [Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.NullChecks, false),
      Unity.IL2CPP.CompilerServices.Il2CppSetOptionAttribute(Unity.IL2CPP.CompilerServices.Option.ArrayBoundsChecks, false),
@@ -30,7 +21,9 @@ namespace Project.Features.Board.Systems
 
         private DataConfig bananaConfig;
         private DataConfig appleConfig;
-        
+
+        private const int SpawnBananaRate = 5;
+
         public World world { get; set; }
 
         void ISystemBase.OnConstruct()
@@ -39,7 +32,7 @@ namespace Project.Features.Board.Systems
 
             appleConfig = Resources.Load<DataConfig>("Food/AppleConfig");
             bananaConfig = Resources.Load<DataConfig>("Food/BananaConfig");
-            
+
             RegisterViews();
         }
 
@@ -50,21 +43,22 @@ namespace Project.Features.Board.Systems
             var bananaView = bananaConfig.Get<DataConfigViewReference>().prefabView;
             bananaViewId = world.RegisterViewSource(bananaView);
         }
-        
+
         private void SpawnFood(ConfigBase config, ViewId viewId)
         {
-            var entity = world.AddEntity();
+            if (!feature.GetRandomEmptyBoardPosition(out var position)) return;
+            var entity = world.AddEntity("Food");
             config.Apply(entity);
             entity.Get<PositionOnBoard>();
             entity.Get<ChangePositionEvent>();
-            entity.SetPosition(feature.GetRandomEmptyBoardPosition());
+            entity.SetPosition(position);
             entity.InstantiateView(viewId);
         }
 
         void ISystemBase.OnDeconstruct()
         {
         }
-        
+
 #if !CSHARP_8_OR_NEWER
 
         bool ISystemFilter.jobs => false;
@@ -77,20 +71,23 @@ namespace Project.Features.Board.Systems
         Filter ISystemFilter.CreateFilter()
         {
             return Filter.Create("Filter-Food-Spawn-System")
-                .With<SpawnFood>()
+                .With<SpawnFoodEvent>()
+                .WithoutShared<GamePaused>()
                 .Push();
         }
 
         void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
-            if (entity.Read<SpawnFood>().foodType == FoodType.Apple)
-            {
-                SpawnFood(appleConfig, appleViewId);
-            }
-            else
+            if (!entity.Read<SpawnFoodEvent>().isInitSpawn &&
+                world.ReadSharedData<GameInfo>().appleCount % SpawnBananaRate == 0)
             {
                 SpawnFood(bananaConfig, bananaViewId);
             }
+            else
+            {
+                SpawnFood(appleConfig, appleViewId);
+            }
+
             world.RemoveEntity(entity);
         }
     }

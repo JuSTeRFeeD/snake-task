@@ -1,4 +1,6 @@
 ﻿using ME.ECS;
+using Project.Features.Board;
+using Project.Features.Board.Components;
 using Project.Features.Destroy.Components;
 
 namespace Project.Features.Destroy.Systems
@@ -11,12 +13,14 @@ namespace Project.Features.Destroy.Systems
     public sealed class DespawnSystem : ISystemFilter
     {
         private DestroyFeature feature;
+        private BoardFeature boardFeature;
 
         public World world { get; set; }
 
         void ISystemBase.OnConstruct()
         {
             this.GetFeature(out feature);
+            this.GetFeature(out boardFeature);
         }
 
         void ISystemBase.OnDeconstruct()
@@ -38,7 +42,15 @@ namespace Project.Features.Destroy.Systems
 
         void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
-            world.RemoveEntity(entity);
+            if (entity.Has<PositionOnBoard>())
+            {
+                boardFeature.UpdateBoardEntity(Entity.Empty, entity.Read<PositionOnBoard>().value);
+                world.RemoveEntity(entity);
+            }
+            else
+            {
+                world.RemoveEntity(entity);
+            }
         }
     }
 }

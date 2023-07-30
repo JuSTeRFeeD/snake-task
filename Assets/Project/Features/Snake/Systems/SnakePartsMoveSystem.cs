@@ -63,8 +63,8 @@ namespace Project.Features.Snake.Systems
             {
                 entity.SetPosition(targetPosition.value);
                 entity.Get<PrevPositionInfo>().position = startMovePosition.value;
-                prevPositionInfo.direction = nextSnakePart.Read<PrevPositionInfo>().direction; // added to here
-                entity.Get<ChangePositionEvent>();
+                prevPositionInfo.direction = nextSnakePart.Read<PrevPositionInfo>().direction;
+                entity.Set<ChangePositionEvent>();
             }
             
             if (!snakeHead.Has<IsMove>())
@@ -74,9 +74,6 @@ namespace Project.Features.Snake.Systems
                 return;
             }
             
-            // var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized; // from here to check
-            // prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
-
             // Check to teleport
             var targetCellPos = BoardUtils.GetCellPos(targetPosition.value);
             var diff = new int2(Math.Abs(targetCellPos.x - positionOnBoard.x),

@@ -4,7 +4,6 @@ using Project.Features.Board;
 using Project.Features.Board.Components;
 using Project.Features.Snake.Components;
 using Project.Utilities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Project.Features.Snake.Systems
@@ -72,16 +71,19 @@ namespace Project.Features.Snake.Systems
                 ref readonly var positionOnBoard = ref entity.Read<PositionOnBoard>().value;
                 ref readonly var moveDirection = ref entity.Read<MoveDirection>().value;
 
+                prevPositionInfo.direction = moveDirection;
+                
                 var targetCellPos = positionOnBoard + moveDirection;
                 targetPosition.value = BoardUtils.GetWorldPosByCellPos(targetCellPos);
 
                 // Check to teleport
                 if (!boardFeature.CheckPosOnBoard(targetCellPos))
                 {
-                    if (targetCellPos.x >= boardFeature.BoardSize.sizeX) targetCellPos.x = 0;
-                    else if (targetCellPos.x < 0) targetCellPos.x = boardFeature.BoardSize.sizeX - 1;
-                    else if (targetCellPos.y >= boardFeature.BoardSize.sizeY) targetCellPos.y = 0;
-                    else if (targetCellPos.y < 0) targetCellPos.y = boardFeature.BoardSize.sizeY - 1;
+                    var boardSize = boardFeature.BoardSize;
+                    if (targetCellPos.x >= boardSize.sizeX) targetCellPos.x = 0;
+                    else if (targetCellPos.x < 0) targetCellPos.x = boardSize.sizeX - 1;
+                    else if (targetCellPos.y >= boardSize.sizeY) targetCellPos.y = 0;
+                    else if (targetCellPos.y < 0) targetCellPos.y = boardSize.sizeY - 1;
                     targetPosition.value = BoardUtils.GetWorldPosByCellPos(targetCellPos);
 
                     EndMove(entity, ref startMovePosition, ref targetPosition,
@@ -95,15 +97,11 @@ namespace Project.Features.Snake.Systems
             
             if (moveTime.value < MoveSeconds)
             {
-                entity.Get<IsMove>();
-            
                 var t = moveTime.value / MoveSeconds;
                 var newPos = Vector3.Lerp(startMovePosition.value, targetPosition.value, t);
                 entity.SetPosition(newPos);
-
-                var dir = ((Vector3)targetPosition.value - (Vector3)startMovePosition.value).normalized;
-                prevPositionInfo.direction = new int2((int)dir.x, (int)dir.z);
                 entity.Get<ChangePositionEvent>();
+                entity.Get<IsMove>();
             }
             else
             {

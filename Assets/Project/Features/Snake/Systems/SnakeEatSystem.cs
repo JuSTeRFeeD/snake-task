@@ -4,9 +4,7 @@ using Project.Features.Board.Components;
 using Project.Features.Destroy.Components;
 using Project.Features.GameState;
 using Project.Features.Snake.Components;
-using Project.Markers;
 using Unity.Collections;
-using UnityEngine;
 
 namespace Project.Features.Snake.Systems
 {

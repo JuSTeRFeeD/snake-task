@@ -2,7 +2,6 @@
 using ME.ECS.DataConfigs;
 using Project.Components;
 using Project.Features.Board.Components;
-using Unity.Collections;
 using UnityEngine;
 
 namespace Project.Features.Board.Systems
@@ -38,9 +37,9 @@ namespace Project.Features.Board.Systems
 
         private void RegisterViews()
         {
-            var appleView = appleConfig.Get<DataConfigViewReference>().prefabView;
+            var appleView = appleConfig.Read<DataConfigViewReference>().prefabView;
             appleViewId = world.RegisterViewSource(appleView);
-            var bananaView = bananaConfig.Get<DataConfigViewReference>().prefabView;
+            var bananaView = bananaConfig.Read<DataConfigViewReference>().prefabView;
             bananaViewId = world.RegisterViewSource(bananaView);
         }
 
@@ -49,8 +48,8 @@ namespace Project.Features.Board.Systems
             if (!feature.GetRandomEmptyBoardPosition(out var position)) return;
             var entity = world.AddEntity("Food");
             config.Apply(entity);
-            entity.Get<PositionOnBoard>();
-            entity.Get<ChangePositionEvent>();
+            entity.Set<PositionOnBoard>();
+            entity.Set<ChangePositionEvent>();
             entity.SetPosition(position);
             entity.InstantiateView(viewId);
         }

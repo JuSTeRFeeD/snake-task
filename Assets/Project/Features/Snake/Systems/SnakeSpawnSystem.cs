@@ -26,7 +26,7 @@ namespace Project.Features.Snake.Systems
 
         private DataConfig snakePartConfig;
         private DataConfig snakeHeadConfig;
-        
+
         private Entity lastPartOfSnake;
 
         void ISystemBase.OnConstruct()
@@ -35,15 +35,15 @@ namespace Project.Features.Snake.Systems
 
             snakeHeadConfig = Resources.Load<DataConfig>("SnakeHeadConfig");
             snakePartConfig = Resources.Load<DataConfig>("SnakePartConfig");
-            
+
             RegisterViews();
         }
 
         private void RegisterViews()
         {
-            var headView = snakeHeadConfig.Get<DataConfigViewReference>().prefabView;
+            var headView = snakeHeadConfig.Read<DataConfigViewReference>().prefabView;
             snakeHeadViewId = world.RegisterViewSource(headView);
-            var partView = snakePartConfig.Get<DataConfigViewReference>().prefabView;
+            var partView = snakePartConfig.Read<DataConfigViewReference>().prefabView;
             snakePartViewId = world.RegisterViewSource(partView);
         }
 
@@ -54,18 +54,21 @@ namespace Project.Features.Snake.Systems
             var worldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos);
 
             var initMoveDir = new int2(0, 1);
-            
+
             entity.SetPosition(worldPos);
 
-            entity.Get<IsSnakeHead>();
-            entity.Get<IsSnakePart>();
-            entity.Get<PositionOnBoard>().value = boardCellPos;
-            entity.Get<StartMovePosition>().value = worldPos;
-            entity.Get<PrevPositionInfo>().direction = initMoveDir;
-            entity.Get<PrevPositionInfo>().position = BoardUtils.GetWorldPosByCellPos(boardCellPos - initMoveDir);
-            entity.Get<TargetPosition>().value = BoardUtils.GetWorldPosByCellPos(boardCellPos + initMoveDir);
-            entity.Get<MoveDirection>().value = initMoveDir;
-            
+            entity.Set<IsSnakeHead>();
+            entity.Set<IsSnakePart>();
+            entity.Set(new PositionOnBoard { value = boardCellPos });
+            entity.Set(new StartMovePosition { value = worldPos });
+            entity.Set(new PrevPositionInfo
+            {
+                position = BoardUtils.GetWorldPosByCellPos(boardCellPos - initMoveDir),
+                direction = initMoveDir,
+            });
+            entity.Set(new TargetPosition { value = BoardUtils.GetWorldPosByCellPos(boardCellPos + initMoveDir) });
+            entity.Set(new MoveDirection { value = initMoveDir });
+
             entity.InstantiateView(snakeHeadViewId);
 
             return entity;
@@ -77,19 +80,22 @@ namespace Project.Features.Snake.Systems
 
             ref readonly var prevPartDirection = ref previousPart.Read<PrevPositionInfo>().direction;
             var boardCellPos = previousPart.Read<PositionOnBoard>().value - prevPartDirection;
-            
+
             var worldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos);
             var targetWorldPos = BoardUtils.GetWorldPosByCellPos(previousPart.Read<PositionOnBoard>().value);
 
             entity.SetPosition(worldPos);
-            
-            entity.Get<IsSnakePart>();
-            entity.Get<SnakeLink>().prevPart = previousPart;
-            entity.Get<PositionOnBoard>().value = boardCellPos;
-            entity.Get<StartMovePosition>().value = worldPos;
-            entity.Get<PrevPositionInfo>().position = worldPos;
-            entity.Get<PrevPositionInfo>().direction = prevPartDirection;
-            entity.Get<TargetPosition>().value = targetWorldPos;
+
+            entity.Set<IsSnakePart>();
+            entity.Set(new SnakeLink { prevPart = previousPart });
+            entity.Set(new PositionOnBoard { value = boardCellPos });
+            entity.Set(new StartMovePosition { value = worldPos });
+            entity.Set(new PrevPositionInfo
+            {
+                position = worldPos,
+                direction = prevPartDirection
+            });
+            entity.Set(new TargetPosition { value = targetWorldPos });
 
             entity.InstantiateView(snakePartViewId);
 
@@ -124,11 +130,11 @@ namespace Project.Features.Snake.Systems
         void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
             lastPartOfSnake = lastPartOfSnake.IsEmpty()
-                ? CreateSnakeHead(snakeHeadConfig, entity.Read<SnakeStartPosition>().startPosition) 
+                ? CreateSnakeHead(snakeHeadConfig, entity.Read<SnakeStartPosition>().startPosition)
                 : CreateSnakePart(snakePartConfig, lastPartOfSnake);
-            
+
             world.RemoveEntity(entity);
-            
+
             ref var gameInfo = ref world.GetSharedData<GameInfo>();
             gameInfo.snakeLength++;
             world.AddMarker(new UpdateInfoMarker());

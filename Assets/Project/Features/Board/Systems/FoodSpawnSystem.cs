@@ -2,6 +2,7 @@
 using ME.ECS.DataConfigs;
 using Project.Components;
 using Project.Features.Board.Components;
+using Project.Features.ParticleEffects.Components;
 using UnityEngine;
 
 namespace Project.Features.Board.Systems
@@ -22,6 +23,8 @@ namespace Project.Features.Board.Systems
         private DataConfig appleConfig;
 
         private const int SpawnBananaRate = 5;
+
+        public ViewId eatEffectViewId;
 
         public World world { get; set; }
 

@@ -17,6 +17,7 @@ MonoBehaviour:
   - rid: 4573080573566255136
   - rid: 4573080573566255138
   - rid: 4573080628623310853
+  - rid: 4573080660232110083
   removeStructComponents: []
   templates: []
   references:
@@ -36,3 +37,10 @@ MonoBehaviour:
       type: {class: TimeToDestroy, ns: Project.Features.Destroy.Components, asm: Project}
       data:
         value: 10
+    - rid: 4573080660232110083
+      type: {class: OnDespawnParticle, ns: Project.Features.ParticleEffects.Components,
+        asm: Project}
+      data:
+        view: {fileID: -2419048516821375613, guid: 53b6e853dc5557d4b870e83d387264a4,
+          type: 3}
+        timeToDespawn: 1

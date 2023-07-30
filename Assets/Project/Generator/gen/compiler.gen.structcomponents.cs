@@ -35,6 +35,7 @@ namespace ME.ECS {
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.SnakePartsUpdateEvent>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.SpawnSnakePartEvent>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Components.DataConfigViewReference>(false, true, false, false, false, false, false, false, false);
+            WorldUtilities.InitComponentTypeId<Project.Features.ParticleEffects.Components.OnDespawnParticle>(false, true, false, false, false, false, false, false, false);
 
         }
 
@@ -71,6 +72,7 @@ namespace ME.ECS {
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.SnakePartsUpdateEvent>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.SpawnSnakePartEvent>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Components.DataConfigViewReference>(false, true, false, false, false, false, false, false, false);
+            WorldUtilities.InitComponentTypeId<Project.Features.ParticleEffects.Components.OnDespawnParticle>(false, true, false, false, false, false, false, false, false);
 
             ComponentsInitializerWorld.Setup(ComponentsInitializerWorldGen.Init);
             CoreComponentsInitializer.Init(state, ref noState);
@@ -102,6 +104,7 @@ namespace ME.ECS {
             state.structComponents.ValidateUnmanaged<Project.Features.Snake.Components.SnakePartsUpdateEvent>(ref state.allocator, true);
             state.structComponents.ValidateUnmanaged<Project.Features.Snake.Components.SpawnSnakePartEvent>(ref state.allocator, true);
             state.structComponents.Validate<Project.Components.DataConfigViewReference>(false);
+            state.structComponents.Validate<Project.Features.ParticleEffects.Components.OnDespawnParticle>(false);
 
         }
 
@@ -138,6 +141,7 @@ namespace ME.ECS {
             entity.ValidateDataUnmanaged<Project.Features.Snake.Components.SnakePartsUpdateEvent>(true);
             entity.ValidateDataUnmanaged<Project.Features.Snake.Components.SpawnSnakePartEvent>(true);
             entity.ValidateData<Project.Components.DataConfigViewReference>(false);
+            entity.ValidateData<Project.Features.ParticleEffects.Components.OnDespawnParticle>(false);
 
         }
 

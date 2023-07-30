@@ -16,6 +16,7 @@ MonoBehaviour:
   structComponents:
   - rid: 4573080573566255135
   - rid: 4573080573566255137
+  - rid: 4573080660232110082
   removeStructComponents: []
   templates: []
   references:
@@ -29,4 +30,12 @@ MonoBehaviour:
     - rid: 4573080573566255137
       type: {class: Food, ns: Project.Features.Board.Components, asm: Project}
       data:
+        foodType: 0
         increaseSnakeSize: 1
+    - rid: 4573080660232110082
+      type: {class: OnDespawnParticle, ns: Project.Features.ParticleEffects.Components,
+        asm: Project}
+      data:
+        view: {fileID: -2419048516821375613, guid: 53b6e853dc5557d4b870e83d387264a4,
+          type: 3}
+        timeToDespawn: 1

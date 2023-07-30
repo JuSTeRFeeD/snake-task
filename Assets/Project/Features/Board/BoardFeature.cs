@@ -35,7 +35,7 @@ namespace Project.Features.Board
 
         private void SpawnFood()
         {
-            var group = world.AddEntities(20, Allocator.Temp, true);
+            var group = world.AddEntities(10, Allocator.Temp, true);
             group.Set(new SpawnFoodEvent() { isInitSpawn = true });
         }
 

@@ -24,7 +24,7 @@ MonoBehaviour:
     - rid: 4573080583824212574
       type: {class: SnakeStartSize, ns: Project.Features.Snake.Components, asm: Project}
       data:
-        value: 2
+        value: 3
     - rid: 4573080583824212575
       type: {class: SnakeStartPosition, ns: Project.Features.Snake.Components, asm: Project}
       data:

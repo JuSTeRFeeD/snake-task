@@ -50,10 +50,10 @@ namespace Project.Features.Snake.Systems
 
         void ISystemFilter.AdvanceTick(in Entity entity, in float deltaTime)
         {
-            ref readonly var nextSnakePart = ref entity.Get<SnakeLink>().prevPart;
-            ref readonly var targetPosition = ref nextSnakePart.Get<StartMovePosition>();
+            ref readonly var nextSnakePart = ref entity.Read<SnakeLink>().prevPart;
+            ref readonly var targetPosition = ref nextSnakePart.Read<StartMovePosition>();
             
-            ref readonly var positionOnBoard = ref entity.Get<PositionOnBoard>().value;
+            ref readonly var positionOnBoard = ref entity.Read<PositionOnBoard>().value;
             ref var startMovePosition = ref entity.Get<StartMovePosition>();
             ref var prevPositionInfo = ref entity.Get<PrevPositionInfo>();
 

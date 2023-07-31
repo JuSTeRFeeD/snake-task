@@ -53,10 +53,10 @@ namespace Project.Network
         private void LateUpdate()
         {
             var world = Worlds.currentWorld;
-            if (world.HasMarker<UpdateInfoMarker>())
+            if (world.HasMarker<UpdateProgressMarker>())
             {
                 SendUpdate(world.GetSharedData<GameInfo>());
-                world.RemoveMarker<UpdateInfoMarker>();
+                world.RemoveMarker<UpdateProgressMarker>();
             }
             if (world.HasMarker<GameEndMarker>())
             {

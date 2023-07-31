@@ -37,11 +37,12 @@ namespace Project.Features.Snake
         {
             var initSnakeConfig = Resources.Load<DataConfig>("SnakeInitConfig");
 
-            var tailLen = initSnakeConfig.Get<SnakeStartSize>().value;
+            var initLenght = initSnakeConfig.Get<SnakeStartSize>().value;
             var startPos = initSnakeConfig.Get<SnakeStartPosition>().startPosition;
             
-            var group = world.AddEntities(tailLen, Allocator.Temp, copyMode: true);
+            var group = world.AddEntities(initLenght, Allocator.Temp, copyMode: true);
             group.Set(new SpawnSnakePartEvent());
+            group.Set(new IsInitPart());
             group.Set(new SnakeStartPosition()
             {
                 startPosition = startPos 

@@ -29,6 +29,7 @@ namespace ME.ECS {
             WorldUtilities.InitComponentTypeId<Project.Components.GamePaused>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Board.Components.ChangePositionEvent>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Destroy.Components.ToDespawn>(true, true, true, false, false, false, false, false, false);
+            WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsInitPart>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsMove>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsSnakeHead>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsSnakePart>(true, true, true, false, false, false, false, false, false);
@@ -66,6 +67,7 @@ namespace ME.ECS {
             WorldUtilities.InitComponentTypeId<Project.Components.GamePaused>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Board.Components.ChangePositionEvent>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Destroy.Components.ToDespawn>(true, true, true, false, false, false, false, false, false);
+            WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsInitPart>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsMove>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsSnakeHead>(true, true, true, false, false, false, false, false, false);
             WorldUtilities.InitComponentTypeId<Project.Features.Snake.Components.IsSnakePart>(true, true, true, false, false, false, false, false, false);
@@ -98,6 +100,7 @@ namespace ME.ECS {
             state.structComponents.ValidateUnmanaged<Project.Components.GamePaused>(ref state.allocator, true);
             state.structComponents.ValidateUnmanaged<Project.Features.Board.Components.ChangePositionEvent>(ref state.allocator, true);
             state.structComponents.ValidateUnmanaged<Project.Features.Destroy.Components.ToDespawn>(ref state.allocator, true);
+            state.structComponents.ValidateUnmanaged<Project.Features.Snake.Components.IsInitPart>(ref state.allocator, true);
             state.structComponents.ValidateUnmanaged<Project.Features.Snake.Components.IsMove>(ref state.allocator, true);
             state.structComponents.ValidateUnmanaged<Project.Features.Snake.Components.IsSnakeHead>(ref state.allocator, true);
             state.structComponents.ValidateUnmanaged<Project.Features.Snake.Components.IsSnakePart>(ref state.allocator, true);
@@ -135,6 +138,7 @@ namespace ME.ECS {
             entity.ValidateDataUnmanaged<Project.Components.GamePaused>(true);
             entity.ValidateDataUnmanaged<Project.Features.Board.Components.ChangePositionEvent>(true);
             entity.ValidateDataUnmanaged<Project.Features.Destroy.Components.ToDespawn>(true);
+            entity.ValidateDataUnmanaged<Project.Features.Snake.Components.IsInitPart>(true);
             entity.ValidateDataUnmanaged<Project.Features.Snake.Components.IsMove>(true);
             entity.ValidateDataUnmanaged<Project.Features.Snake.Components.IsSnakeHead>(true);
             entity.ValidateDataUnmanaged<Project.Features.Snake.Components.IsSnakePart>(true);

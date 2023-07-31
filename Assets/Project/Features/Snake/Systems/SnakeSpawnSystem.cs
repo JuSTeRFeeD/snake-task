@@ -74,12 +74,18 @@ namespace Project.Features.Snake.Systems
             return entity;
         }
 
-        private Entity CreateSnakePart(ConfigBase config, Entity previousPart)
+        private Entity CreateSnakePart(ConfigBase config, Entity previousPart, bool isInitPart)
         {
             var entity = CreateEntityWithConfig(config);
 
             ref readonly var prevPartDirection = ref previousPart.Read<PrevPositionInfo>().direction;
-            var boardCellPos = previousPart.Read<PositionOnBoard>().value - prevPartDirection;
+            var boardCellPos = previousPart.Read<PositionOnBoard>().value;
+
+            // spawn on last part position if not initializing
+            if (isInitPart)
+            {
+                boardCellPos -= prevPartDirection;
+            }
 
             var worldPos = BoardUtils.GetWorldPosByCellPos(boardCellPos);
             var targetWorldPos = BoardUtils.GetWorldPosByCellPos(previousPart.Read<PositionOnBoard>().value);
@@ -123,6 +129,7 @@ namespace Project.Features.Snake.Systems
         {
             return Filter.Create("Filter-SnakeSpawnSystem")
                 .With<SpawnSnakePartEvent>()
+                .WithShared<GameInfo>()
                 .WithoutShared<GamePaused>()
                 .Push();
         }
@@ -131,13 +138,13 @@ namespace Project.Features.Snake.Systems
         {
             lastPartOfSnake = lastPartOfSnake.IsEmpty()
                 ? CreateSnakeHead(snakeHeadConfig, entity.Read<SnakeStartPosition>().startPosition)
-                : CreateSnakePart(snakePartConfig, lastPartOfSnake);
+                : CreateSnakePart(snakePartConfig, lastPartOfSnake, entity.Has<IsInitPart>());
 
             world.RemoveEntity(entity);
 
             ref var gameInfo = ref world.GetSharedData<GameInfo>();
             gameInfo.snakeLength++;
-            world.AddMarker(new UpdateInfoMarker());
+            world.AddMarker(new UpdateProgressMarker());
         }
     }
 }

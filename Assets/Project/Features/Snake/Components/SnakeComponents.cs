@@ -3,6 +3,10 @@ using Unity.Mathematics;
 
 namespace Project.Features.Snake.Components
 {
+    public struct IsInitPart : IComponent
+    {
+    }
+    
     public struct IsSnakeHead : IComponent
     {
     }

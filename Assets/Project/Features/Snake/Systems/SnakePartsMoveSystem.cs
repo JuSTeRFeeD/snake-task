@@ -18,6 +18,8 @@ namespace Project.Features.Snake.Systems
     {
         private SnakeFeature feature;
 
+        private const int DiffToTeleport = 2;
+
         public World world { get; set; }
 
         void ISystemBase.OnConstruct()
@@ -62,14 +64,14 @@ namespace Project.Features.Snake.Systems
             if (snakeHead.Has<SnakePartsUpdateEvent>())
             {
                 entity.SetPosition(targetPosition.value);
-                entity.Get<PrevPositionInfo>().position = startMovePosition.value;
+                prevPositionInfo.position = startMovePosition.value;
                 prevPositionInfo.direction = nextSnakePart.Read<PrevPositionInfo>().direction;
                 entity.Set<ChangePositionEvent>();
             }
             
             if (!snakeHead.Has<IsMove>())
             {
-                entity.SetPosition(nextSnakePart.Get<PrevPositionInfo>().position);
+                entity.SetPosition(nextSnakePart.Read<PrevPositionInfo>().position);
                 startMovePosition.value = entity.GetPosition();
                 return;
             }
@@ -78,7 +80,7 @@ namespace Project.Features.Snake.Systems
             var targetCellPos = BoardUtils.GetCellPos(targetPosition.value);
             var diff = new int2(Math.Abs(targetCellPos.x - positionOnBoard.x),
                 Math.Abs(targetCellPos.y - positionOnBoard.y));
-            if (diff.x > 1 || diff.y > 1)
+            if (diff.x > DiffToTeleport || diff.y > DiffToTeleport)
             {
                 entity.SetPosition(targetPosition.value);
                 return;

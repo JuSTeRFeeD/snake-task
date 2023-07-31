@@ -2,7 +2,7 @@
 
 namespace Project.Markers
 {
-    public struct UpdateInfoMarker : IMarker
+    public struct UpdateProgressMarker : IMarker
     {
     }
 }
